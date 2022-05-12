@@ -1,0 +1,42 @@
+﻿@model IEnumerable<ApplicationUser>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Assign a role to user</h1>
+
+@if ( TempData["Message"] != null )
+{
+    <h5 style="color:red;">@TempData["Message"]</h5>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                <a asp-action="UserRoleDetails" asp-route-userId="@item.Id">Details</a> |
+                <a asp-action="AssignRoleToUser" asp-route-userId="@item.Id">Assign a role</a> |
+                <a asp-action="UnassignRole" asp-route-userId="@item.Id">Unassign a role</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
