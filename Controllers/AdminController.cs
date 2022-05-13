@@ -71,5 +71,51 @@ namespace SD_125_BugTracker.Controllers
             }
         }
 
+
+        public async Task<ActionResult> UnassignRole(string userId)
+        {
+            try
+            {
+                ApplicationUser user =  await _userManager.FindByIdAsync(userId);
+                if ( user != null )
+                {
+                    ViewBag.UserName = user.UserName;
+                    ViewBag.UserId = user.Id;
+                    var rolesOfUser = await _userManager.GetRolesAsync(user);
+                    List<IdentityRole> rolesToUnassign = _db.Roles.Where(r => rolesOfUser.Contains(r.Name)).ToList();
+                    SelectList rolesSlectList = new SelectList(rolesToUnassign, "Id", "Name");
+                    return View(rolesSlectList);
+                }
+                else
+                {
+                    return NotFound("User not found");
+                }
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UnassignRole(string userId, string roleId)
+        {
+            try
+            {
+                ApplicationUser user = await _userManager.FindByIdAsync(userId);
+                IdentityRole role = await _roleManager.FindByIdAsync(roleId);
+
+                await _userManager.RemoveFromRoleAsync(user,role.Name);
+                await _db.SaveChangesAsync();
+                TempData["Message"] = "Unassigned role successfully";
+                return RedirectToAction(nameof(UserList));
+            }
+            catch
+            {
+                return View();
+            }
+
+        }
     }
 }

@@ -1,0 +1,15 @@
+﻿@model SelectList
+@{
+    ViewData["Title"] = "Unassign A Role From Current User";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h5>UserName: @ViewBag.UserName</h5>
+
+<form method="post" asp-action="UnassignRole">
+    <select asp-items=@Model name="roleId"></select>
+    <input type="hidden" name="userId" value="@ViewBag.UserId" />
+    <button type="submit">Confirm</button>
+</form>
+
