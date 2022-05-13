@@ -117,5 +117,21 @@ namespace SD_125_BugTracker.Controllers
             }
 
         }
+
+        public async Task<ActionResult> UserRoleDetails(string userId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
+            if ( user != null )
+            {
+                var rolesOfUser = await _userManager.GetRolesAsync(user);
+                List<IdentityRole> currentRoles = _db.Roles.Where(r => rolesOfUser.Contains(r.Name)).ToList();
+                ViewBag.username = user.UserName;
+                return View(currentRoles);
+            }
+            else
+            {
+                return NotFound("User not found");
+            }
+        }
     }
 }
