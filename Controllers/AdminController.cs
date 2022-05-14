@@ -21,9 +21,9 @@ namespace SD_125_BugTracker.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+                return View();          
         }
 
         public IActionResult UserList()
@@ -76,7 +76,7 @@ namespace SD_125_BugTracker.Controllers
         {
             try
             {
-                ApplicationUser user =  await _userManager.FindByIdAsync(userId);
+                ApplicationUser user = await _userManager.FindByIdAsync(userId);
                 if ( user != null )
                 {
                     ViewBag.UserName = user.UserName;
@@ -106,7 +106,7 @@ namespace SD_125_BugTracker.Controllers
                 ApplicationUser user = await _userManager.FindByIdAsync(userId);
                 IdentityRole role = await _roleManager.FindByIdAsync(roleId);
 
-                await _userManager.RemoveFromRoleAsync(user,role.Name);
+                await _userManager.RemoveFromRoleAsync(user, role.Name);
                 await _db.SaveChangesAsync();
                 TempData["Message"] = "Unassigned role successfully";
                 return RedirectToAction(nameof(UserList));

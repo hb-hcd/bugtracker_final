@@ -1,4 +1,4 @@
-﻿
+﻿@model ApplicationUser
 @{
     ViewData["Title"] = "Index";
 }
@@ -6,8 +6,7 @@
 <h1>Admin Dashboard</h1>
 <hr />
 
-<a asp-action="UserList">Manage Roles</a> |
-<a asp-action="PersonalProjects" asp-controller="Project">Your Projects</a> |
-<a asp-action="AllProjects" asp-controller="Project">All Projects</a> |
-<a asp-action="AllTickets" asp-controller="Ticket">All Tickets</a> 
+<a asp-action="UserList" >Manage Roles</a> |
+<a asp-action="Index" asp-controller="Project" >Manage Projects</a> |
+<a asp-action="ManageTickets" asp-controller="Ticket" >Manage Tickets</a> 
 

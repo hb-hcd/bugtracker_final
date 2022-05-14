@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Manage Projects</h1>
+@if ( TempData["message"] != null )
+{
+    <h5 style="color:red">@TempData["message"]</h5>
+}
+<hr />
+
+<a asp-action="viewProjects" asp-route-userId =@ViewBag.userId>View your projects</a> |
+<a asp-action="viewAllProjects" asp-route-userId =@ViewBag.userId>View All Projects</a> |
+<a asp-action="createProject" asp-route-userId =@ViewBag.userId >Create new project</a> 
+
