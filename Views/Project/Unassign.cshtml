@@ -1,0 +1,49 @@
+﻿@model Project
+
+@{
+    ViewData["Title"] = "Unassign";
+}
+
+<h1>Unassign project</h1>
+
+<div>
+    <hr />
+    <form asp-action="Unassign" method="post">
+        <dl class="row">
+            <dt class="col-sm-2">
+                Project name
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt class="col-sm-2">
+                Assigned to
+            </dt>
+
+            @if ( ViewBag.userName != null )
+            {
+                <dd class="col-sm-10">
+                    @ViewBag.userName
+                </dd>
+                <button class="col-sm-2 btn-danger" type="submit" onclick="return confirm('Are you sure to unassign @ViewBag.userName from this project?')">Unassign</button>
+            }
+            else
+            {
+                <dd class="col-sm-10">
+                    No assigned user
+                </dd>
+                <button  class="col-sm-2" type="submit" disabled>Unassign</button>
+            }
+        </dl>
+        <input type="hidden" name="ProjectId" value="@ViewBag.ProjectId" />
+         <input type="hidden" name="userName" value=" @ViewBag.userName" />
+    </form>
+
+</div>
+
+
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

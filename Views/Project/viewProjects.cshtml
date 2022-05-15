@@ -4,16 +4,16 @@
     ViewData["Title"] = "viewProjects";
 }
 
-<h1>viewProjects</h1>
+<h1>Your Projects</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="createProject" asp-route-userId="@ViewBag.userId">Create New Project</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Project Name
             </th>
             <th></th>
         </tr>
@@ -25,9 +25,10 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Assign" asp-route-id="@item.Id">Assign</a> |
-                <a asp-action="Archive" asp-route-id="@item.Id">Archive`</a>
+                <a asp-action="Edit" asp-route-ProjectId="@item.Id">Edit</a> |
+                <a asp-action="Assign" asp-route-ProjectId="@item.Id">Assign</a> |
+                <a asp-action="Unassign" asp-route-ProjectId="@item.Id">Unassign</a> |
+                <a asp-action="Archive" asp-route-ProjectId="@item.Id">Archive</a>
             </td>
         </tr>
 }
