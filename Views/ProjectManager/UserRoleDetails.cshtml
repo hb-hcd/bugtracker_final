@@ -1,0 +1,14 @@
+﻿
+<h3>Roles of current user</h3>
+User: @ViewBag.username
+@if ( Model != null )
+{
+    foreach ( var item in Model )
+    {
+        <p>@item.Name</p>
+    }
+}
+else
+{
+    <p>There is no role assigned to current user.</p>
+}

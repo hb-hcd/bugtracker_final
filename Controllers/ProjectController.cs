@@ -80,13 +80,14 @@ namespace SD_125_BugTracker.Controllers
                 projectIds.Add((int)projectUser.ProjectId);
             }
             var userProjects = projectBL.GetUserProjects(projectIds);
-
+            ViewBag.userId = userId;
             return View(userProjects);
         }
 
-        public IActionResult viewAllProjects()
+        public IActionResult viewAllProjects(string userId)
         {
             List<Project> allProjects = projectBL.GetAllProjects();
+            ViewBag.userId = userId;
             return View(allProjects);
         }
 
