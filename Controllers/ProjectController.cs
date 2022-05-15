@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SD_125_BugTracker.BLL;
 using SD_125_BugTracker.DAL;
 using SD_125_BugTracker.Data;
@@ -13,18 +14,19 @@ namespace SD_125_BugTracker.Controllers
         private UserManager<ApplicationUser> _userManager;
         private ProjectBusinessLogic projectBL;
         private ProjectUserBusinessLogic projectUserBL;
-       
+        private AssignedProjectBusinessLogic assignedProjectBL;
         public ProjectController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _db = context;
             _userManager = userManager;
             projectBL = new ProjectBusinessLogic(new ProjectRepository(context));
             projectUserBL = new ProjectUserBusinessLogic(new ProjectUserRepository(context));
+            assignedProjectBL = new AssignedProjectBusinessLogic(new AssignedProjectRepository(context));
         }
         public async Task<ActionResult> Index()
         {
-         var currUsername = User.Identity.Name;
-         ApplicationUser currUser = await _userManager.FindByNameAsync(currUsername);
+            var currUsername = User.Identity.Name;
+            ApplicationUser currUser = await _userManager.FindByNameAsync(currUsername);
             if ( currUser != null )
             {
                 ViewBag.userId = currUser.Id;
@@ -32,7 +34,7 @@ namespace SD_125_BugTracker.Controllers
             }
             else
             {
-                return RedirectToAction("Index","Admin");
+                return RedirectToAction("Index", "Admin");
             }
         }
 
@@ -62,23 +64,23 @@ namespace SD_125_BugTracker.Controllers
                 TempData["message"] = "Project created succesfully";
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex )
+            catch ( Exception ex )
             {
                 return NotFound(ex.Message);
-            }  
-       }
+            }
+        }
 
         public IActionResult viewProjects(string userId)
         {
             //get all projectIds of the current user
-           var projectUsers = projectUserBL.GetList(userId);
+            var projectUsers = projectUserBL.GetList(userId);
             List<int> projectIds = new List<int>();
             foreach ( var projectUser in projectUsers )
             {
-                     projectIds.Add((int)projectUser.ProjectId);
-            }           
-            var userProjects=  projectBL.GetUserProjects(projectIds);
-          
+                projectIds.Add((int)projectUser.ProjectId);
+            }
+            var userProjects = projectBL.GetUserProjects(projectIds);
+
             return View(userProjects);
         }
 
@@ -88,10 +90,63 @@ namespace SD_125_BugTracker.Controllers
             return View(allProjects);
         }
 
-        public IActionResult Assign()
+
+        public async Task<ActionResult> Assign(int ProjectId)
         {
-          List<ApplicationUser> allusers = _userManager.Users.ToList();
+            Project project = projectBL.Get(ProjectId);
+            if ( project == null )
+            {
+                return NotFound("Project not found");
+            }
+            List<ApplicationUser> allusers = _userManager.Users.ToList();
+            SelectList allusersSelectList = new SelectList(allusers, "Id", "UserName");
+            ViewBag.ProjectId = project.Id;
+            ViewBag.ProjectName = project.Name;
+            //current assigned user
+             AssignedProject projectToAssign = assignedProjectBL.Get(ProjectId);
+            if ( projectToAssign != null )
+            {
+                ApplicationUser currAssignedUser = await _userManager.FindByIdAsync(projectToAssign.UserId);
+                ViewBag.currentAssigned = currAssignedUser.UserName;
+            }           
+                return View(allusersSelectList);                  
         }
 
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult Assign(int projectId, string userId)
+        {
+            AssignedProject assignedProject = new AssignedProject();
+            assignedProject.ProjectId = projectId;
+            assignedProject.UserId = userId;
+            assignedProjectBL.Add(assignedProject);
+            TempData["message"] = "Assigned project successfully";
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> Unassign(int ProjectId)
+        {
+           AssignedProject assignedProject  = assignedProjectBL.Get(ProjectId);
+            if ( assignedProject != null )
+            {
+             ApplicationUser currAssignedUser =await _userManager.FindByIdAsync(assignedProject.UserId);
+             ViewBag.userName = currAssignedUser.UserName;
+            }
+            
+           Project projectToUnassign = projectBL.Get(ProjectId);
+            ViewBag.ProjectId = projectToUnassign.Id;
+
+            return View(projectToUnassign);
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult Unassign(int ProjectId, string userName)
+        {
+            assignedProjectBL.Delete(ProjectId);
+            TempData["message"] = "Unassigned project successfully";
+            return RedirectToAction("Index");
+
+        }
     }
 }

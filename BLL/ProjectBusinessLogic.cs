@@ -20,6 +20,10 @@ namespace SD_125_BugTracker.BLL
             projectRepo.Save();
         }
 
+        public Project Get(int id)
+        {
+           return projectRepo.Get(id);
+        }
         public List<Project> GetAllProjects()
         {
            return projectRepo.GetAll().ToList();

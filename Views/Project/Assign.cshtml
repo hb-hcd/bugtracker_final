@@ -1,0 +1,38 @@
+﻿@model SelectList
+@{
+    ViewData["Title"] = "Assign";
+}
+
+<h1>Assign to user</h1>
+
+<h5>Project: @ViewBag.ProjectName</h5>
+
+    @if ( ViewBag.currentAssigned != null )
+    {
+        <h5>Current assigned to: @ViewBag.currentAssigned</h5>
+        <a asp-action="Unassign" asp-route-ProjectId="@ViewBag.ProjectId">To unassign the current user</a>
+    }
+    else
+    {
+        <h5>Current assigned to: No assigned user yet</h5>
+    }
+    <hr />
+
+
+
+<form method="post" asp-action="Assign">
+
+    <select asp-items=@Model name="userId"></select>
+    <input type="hidden" name="projectId" value="@ViewBag.ProjectId" />
+    @if ( ViewBag.currentAssigned != null )
+    {
+        <button type="submit" disabled>Confirm</button>
+    }
+    else
+    {
+        <button type="submit" class="btn-primary">Confirm</button>
+    }
+
+</form>
+
+
