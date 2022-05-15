@@ -95,62 +95,62 @@ namespace SD_125_BugTracker.Models
                 await userManager.AddToRoleAsync(seededUser5, "Submitter");
             }
             await context.SaveChangesAsync();
-            //add priority
-            //if ( !context.TicketPriorities.Any() )
-            //{
-            //    TicketPriority ticketPriority1 = new TicketPriority();
-            //    ticketPriority1.Name = Priority.High;
+           // add priority
+            if ( !context.TicketPriorities.Any() )
+            {
+                TicketPriority ticketPriority1 = new TicketPriority();
+                ticketPriority1.Name = Priority.High;
 
-            //    TicketPriority ticketPriority2 = new TicketPriority();
-            //    ticketPriority2.Name = Priority.Medium;
+                TicketPriority ticketPriority2 = new TicketPriority();
+                ticketPriority2.Name = Priority.Medium;
 
-            //    TicketPriority ticketPriority3 = new TicketPriority();
-            //    ticketPriority3.Name = Priority.Low;
+                TicketPriority ticketPriority3 = new TicketPriority();
+                ticketPriority3.Name = Priority.Low;
 
-            //    context.TicketPriorities.Add(ticketPriority1);
-            //    context.TicketPriorities.Add(ticketPriority2);
-            //    context.TicketPriorities.Add(ticketPriority3);
-            //    context.SaveChanges();
-            //}
+                context.TicketPriorities.Add(ticketPriority1);
+                context.TicketPriorities.Add(ticketPriority2);
+                context.TicketPriorities.Add(ticketPriority3);
+                context.SaveChanges();
+            }
             //add ticketstatus
-            //if ( !context.TicketStatuses.Any() )
-            //{
-            //    TicketStatus ticketStatus1 = new TicketStatus();
-            //    ticketStatus1.Status = Status.Completed;
+            if ( !context.TicketStatuses.Any() )
+            {
+                TicketStatus ticketStatus1 = new TicketStatus();
+                ticketStatus1.Status = Status.Completed;
 
-            //    TicketStatus ticketStatus2 = new TicketStatus();
-            //    ticketStatus1.Status = Status.InProgress;
+                TicketStatus ticketStatus2 = new TicketStatus();
+                ticketStatus2.Status = Status.InProgress;
 
-            //    TicketStatus ticketStatus3 = new TicketStatus();
-            //    ticketStatus1.Status = Status.Assigned;
+                TicketStatus ticketStatus3 = new TicketStatus();
+                ticketStatus3.Status = Status.Assigned;
 
-            //    TicketStatus ticketStatus4 = new TicketStatus();
-            //    ticketStatus1.Status = Status.Unassigned;
+                TicketStatus ticketStatus4 = new TicketStatus();
+                ticketStatus4.Status = Status.Unassigned;
 
-            //    context.TicketStatuses.Add(ticketStatus1);
-            //    context.TicketStatuses.Add(ticketStatus2);
-            //    context.TicketStatuses.Add(ticketStatus3);
-            //    context.TicketStatuses.Add(ticketStatus4);
-            //    context.SaveChanges();
-            //}
+                context.TicketStatuses.Add(ticketStatus1);
+                context.TicketStatuses.Add(ticketStatus2);
+                context.TicketStatuses.Add(ticketStatus3);
+                context.TicketStatuses.Add(ticketStatus4);
+                context.SaveChanges();
+            }
             //add tickettype
-            //if ( !context.TicketyTypes.Any() )
-            //{
-            //    TicketType ticketType1 = new TicketType();
-            //    ticketType1.Name = Type.InformationRequest;
+            if ( !context.TicketyTypes.Any() )
+            {
+                TicketType ticketType1 = new TicketType();
+                ticketType1.Name = Type.InformationRequest;
 
-            //    TicketType ticketType2 = new TicketType();
-            //    ticketType1.Name = Type.ServiceRequest;
+                TicketType ticketType2 = new TicketType();
+                ticketType2.Name = Type.ServiceRequest;
 
-            //    TicketType ticketType3 = new TicketType();
-            //    ticketType1.Name = Type.Incident;
+                TicketType ticketType3 = new TicketType();
+                ticketType3.Name = Type.Incident;
 
-            //    context.TicketyTypes.Add(ticketType1);
-            //    context.TicketyTypes.Add(ticketType2);
-            //    context.TicketyTypes.Add(ticketType3);
-            //    context.SaveChanges();
+                context.TicketyTypes.Add(ticketType1);
+                context.TicketyTypes.Add(ticketType2);
+                context.TicketyTypes.Add(ticketType3);
+                context.SaveChanges();
 
-            //}
+            }
         }
     }
 }
