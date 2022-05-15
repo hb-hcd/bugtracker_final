@@ -149,5 +149,23 @@ namespace SD_125_BugTracker.Controllers
             return RedirectToAction("Index");
 
         }
+
+        public IActionResult Edit(int ProjectId)
+        {
+            Project projectToEdit = projectBL.Get(ProjectId);
+            return View(projectToEdit);
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult Edit(int Id, string Name)
+        {
+            Project projectToEdit = projectBL.Get(Id);
+            projectToEdit.Name = Name;
+            projectBL.Edit(projectToEdit);
+            TempData["message"] = "Edited project successfully";
+            return RedirectToAction("Index");
+         
+        }
     }
 }

@@ -36,5 +36,11 @@ namespace SD_125_BugTracker.BLL
             return projectRepo.GetList(p=>projectIds.Contains(p.Id)).ToList();
         }
 
+        public void Edit(Project project)
+        {
+            projectRepo.Update(project);
+            projectRepo.Save();
+        }
+
     }
 }
