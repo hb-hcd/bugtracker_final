@@ -96,7 +96,7 @@ namespace SD_125_BugTracker.Models
             }
             await context.SaveChangesAsync();
            // add priority
-            if ( !context.TicketPriorities.Any() )
+            if (!context.TicketPriorities.Any())
             {
                 TicketPriority ticketPriority1 = new TicketPriority();
                 ticketPriority1.Name = Priority.High;
@@ -113,7 +113,7 @@ namespace SD_125_BugTracker.Models
                 context.SaveChanges();
             }
             //add ticketstatus
-            if ( !context.TicketStatuses.Any() )
+            if (!context.TicketStatuses.Any())
             {
                 TicketStatus ticketStatus1 = new TicketStatus();
                 ticketStatus1.Status = Status.Completed;
@@ -133,8 +133,8 @@ namespace SD_125_BugTracker.Models
                 context.TicketStatuses.Add(ticketStatus4);
                 context.SaveChanges();
             }
-            //add tickettype
-            if ( !context.TicketyTypes.Any() )
+            // add tickettype
+            if (!context.TicketyTypes.Any())
             {
                 TicketType ticketType1 = new TicketType();
                 ticketType1.Name = Type.InformationRequest;
@@ -149,7 +149,6 @@ namespace SD_125_BugTracker.Models
                 context.TicketyTypes.Add(ticketType2);
                 context.TicketyTypes.Add(ticketType3);
                 context.SaveChanges();
-
             }
         }
     }

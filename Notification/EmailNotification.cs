@@ -76,13 +76,16 @@ namespace SD_125_BugTracker.Notification
             }
         }
 
-        public async Task TicketAssignEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority)
+        public async Task<string> TicketAssignEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority)
         {
             try
             {
-                Client.DefaultRequestHeaders.Add("Authorization", token);
+                if (Client.DefaultRequestHeaders.Authorization == null)
+                {
+                    Client.DefaultRequestHeaders.Add("Authorization", token);
+                }
 
-                string payload = "{ \"message\": { \"routing\": {\"method\": \"single\",\"channels\": []},\"channels\": {},\"providers\": {},\"metadata\": {\"tags\": [],\"utm\": {}     }, \"to\": {\"data\": {\"recipientName\":" + $"\"{recipientName}\"" + ", \"projectName\":" + $"\"{projectName}\"" + ", \"ticketName\":" + $"\"{ticketName}\"" + ", \"ticketDescription\":" + $"\"{ticketDescription}\"" + ", \"ticketType\":" + $"\"{ticketType}\"" + ", \"ticketPriority\":" + $"\"{ticketPriority}\"" + ", \"createdDateTime\":" + $"\"{DateTime.Now.ToString("g")}\"" + "},\"preferences\": {},\"email\":" + $"\"{recipientEmail}\"" + "},\"template\": \"3CFKR3KYGM4R2KQXRWTA513QKYW4\"}}";
+                string payload = "{ \"message\":} { \"routing\": {\"method\": \"single\",\"channels\": []},\"channels\": {},\"providers\": {},\"metadata\": {\"tags\": [],\"utm\": {}     }, \"to\": {\"data\": {\"recipientName\":" + $"\"{recipientName}\"" + ", \"projectName\":" + $"\"{projectName}\"" + ", \"ticketName\":" + $"\"{ticketName}\"" + ", \"ticketDescription\":" + $"\"{ticketDescription}\"" + ", \"ticketType\":" + $"\"{ticketType}\"" + ", \"ticketPriority\":" + $"\"{ticketPriority}\"" + ", \"createdDateTime\":" + $"\"{DateTime.Now.ToString("g")}\"" + "},\"preferences\": {},\"email\":" + $"\"{recipientEmail}\"" + "},\"template\": \"3CFKR3KYGM4R2KQXRWTA513QKYW4\"}}";
 
                 HttpContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -91,10 +94,15 @@ namespace SD_125_BugTracker.Notification
                 {
                     throw new Exception(resp.ReasonPhrase);
                 }
+                else
+                {
+                    return "Email sent succesfully";
+                }
             }
             catch ( Exception ex )
             {
                 Console.WriteLine("Error: " + ex.ToString());
+                return "Error: " + ex.ToString();
             }
         }
     }
