@@ -26,9 +26,5 @@ namespace SD_125_BugTracker.Data
         public virtual DbSet<AssignedProject> AssignedProjects {get; set; } = null!;
 
 
-
-
-
-
     }
 }

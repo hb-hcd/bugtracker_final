@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SD_125_BugTracker.Models.Project>
+﻿@model PaginationList<Project>
 
 @{
     ViewData["Title"] = "viewAllProjects";
@@ -9,6 +9,13 @@
 <p>
     <a asp-action="createProject" asp-route-userId="@ViewBag.userId">Create New Project</a>
 </p>
+@using (Html.BeginForm("viewAllProjects", "Project", FormMethod.Get))
+{
+    <p>
+        Search by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string) 
+        <input type="submit" value="Search" />
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -34,3 +41,26 @@
 }
     </tbody>
 </table>
+@*The properties HasPreviousPage and HasNextPage can be used to enable or disable Previous and Next paging buttons*@
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+@*Show current page index and total pages*@
+Page @(Model.TotalPages < Model.PageIndex ? 0 : Model.PageIndex) of @Model.TotalPages
+
+@*Go to previous page: pageIndex -1, and pass the pageNumber to Action Index*@
+<a asp-action="viewAllProjects"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+  asp-route-userId="@ViewBag.userId"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+@*Go to next page: pageIndex +1*@
+<a asp-action="viewAllProjects"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-userId="@ViewBag.userId"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
