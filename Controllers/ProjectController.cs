@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SD_125_BugTracker.BLL;
@@ -8,6 +9,9 @@ using SD_125_BugTracker.Models;
 
 namespace SD_125_BugTracker.Controllers
 {
+    
+    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Project Manager")]
     public class ProjectController : Controller
     {
         private ApplicationDbContext _db;
@@ -79,14 +83,14 @@ namespace SD_125_BugTracker.Controllers
             {
                 projectIds.Add((int)projectUser.ProjectId);
             }
-            var userProjects = projectBL.GetUserProjects(projectIds);
+            var userProjects = projectBL.GetUserProjects(projectIds).Where(p => p.IsArchived == false).ToList();
             ViewBag.userId = userId;
             return View(userProjects);
         }
 
         public IActionResult viewAllProjects(string userId)
         {
-            List<Project> allProjects = projectBL.GetAllProjects();
+            List<Project> allProjects = projectBL.GetAllProjects().Where(p=>p.IsArchived == false).ToList();
             ViewBag.userId = userId;
             return View(allProjects);
         }
@@ -166,6 +170,14 @@ namespace SD_125_BugTracker.Controllers
             TempData["message"] = "Edited project successfully";
             return RedirectToAction("Index");
          
+        }
+
+        public IActionResult Archive(int ProjectId)
+        {
+            Project projectToArchive = projectBL.Get(ProjectId);
+            projectToArchive.IsArchived = true;
+            projectBL.Edit(projectToArchive);
+            return RedirectToAction("Index");
         }
     }
 }
