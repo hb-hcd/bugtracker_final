@@ -9,7 +9,7 @@ namespace SD_125_BugTracker.Notification
         static string apiEndpoint = "https://api.courier.com/send";
         static string token = "Bearer " + "pk_prod_5481WC0EBTMG5AJJCYVWZ7M18X61";
 
-        public async Task TicketUpdateEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority, string propertyChanged, string oldValue, string newValue)
+        public async Task<string> TicketUpdateEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority, string propertyChanged, string oldValue, string newValue)
         {
             try
             {
@@ -24,14 +24,18 @@ namespace SD_125_BugTracker.Notification
                 {
                     throw new Exception(resp.ReasonPhrase);
                 }
+                else
+                {
+                    return "Email sent successfully";
+                }
             }
             catch ( Exception ex )
             {
-                Console.WriteLine("Error: " + ex.ToString());
+                return "Error: " + ex.ToString();
             }
         }
 
-        public async Task NewTicketCommentEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority, string commenter, string commentBody)
+        public async Task<string> NewTicketCommentEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority, string commenter, string commentBody)
         {
             try
             {
@@ -46,14 +50,18 @@ namespace SD_125_BugTracker.Notification
                 {
                     throw new Exception(resp.ReasonPhrase);
                 }
+                else
+                {
+                    return "Email sent successfully";
+                }
             }
             catch ( Exception ex )
             {
-                Console.WriteLine("Error: " + ex.ToString());
+                return "Error: " + ex.ToString();
             }
         }
 
-        public async Task NewTicketAttachmentEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority)
+        public async Task<string> NewTicketAttachmentEmail(string recipientEmail, string recipientName, string ticketName, string ticketDescription, string projectName, string ticketType, string ticketPriority)
         {
             // WORK ON THIS
             try
@@ -69,10 +77,14 @@ namespace SD_125_BugTracker.Notification
                 {
                     throw new Exception(resp.ReasonPhrase);
                 }
+                else
+                {
+                    return "Email sent successfully";
+                }
             }
             catch ( Exception ex )
             {
-                Console.WriteLine("Error: " + ex.ToString());
+                return "Error: " + ex.ToString();
             }
         }
 
@@ -85,7 +97,7 @@ namespace SD_125_BugTracker.Notification
                     Client.DefaultRequestHeaders.Add("Authorization", token);
                 }
 
-                string payload = "{ \"message\":} { \"routing\": {\"method\": \"single\",\"channels\": []},\"channels\": {},\"providers\": {},\"metadata\": {\"tags\": [],\"utm\": {}     }, \"to\": {\"data\": {\"recipientName\":" + $"\"{recipientName}\"" + ", \"projectName\":" + $"\"{projectName}\"" + ", \"ticketName\":" + $"\"{ticketName}\"" + ", \"ticketDescription\":" + $"\"{ticketDescription}\"" + ", \"ticketType\":" + $"\"{ticketType}\"" + ", \"ticketPriority\":" + $"\"{ticketPriority}\"" + ", \"createdDateTime\":" + $"\"{DateTime.Now.ToString("g")}\"" + "},\"preferences\": {},\"email\":" + $"\"{recipientEmail}\"" + "},\"template\": \"3CFKR3KYGM4R2KQXRWTA513QKYW4\"}}";
+                string payload = "{ \"message\": { \"routing\": {\"method\": \"single\",\"channels\": []},\"channels\": {},\"providers\": {},\"metadata\": {\"tags\": [],\"utm\": {}     }, \"to\": {\"data\": {\"recipientName\":" + $"\"{recipientName}\"" + ", \"projectName\":" + $"\"{projectName}\"" + ", \"ticketName\":" + $"\"{ticketName}\"" + ", \"ticketDescription\":" + $"\"{ticketDescription}\"" + ", \"ticketType\":" + $"\"{ticketType}\"" + ", \"ticketPriority\":" + $"\"{ticketPriority}\"" + ", \"createdDateTime\":" + $"\"{DateTime.Now.ToString("g")}\"" + "},\"preferences\": {},\"email\":" + $"\"{recipientEmail}\"" + "},\"template\": \"3CFKR3KYGM4R2KQXRWTA513QKYW4\"}}";
 
                 HttpContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -96,12 +108,11 @@ namespace SD_125_BugTracker.Notification
                 }
                 else
                 {
-                    return "Email sent succesfully";
+                    return "Email sent successfully";
                 }
             }
             catch ( Exception ex )
             {
-                Console.WriteLine("Error: " + ex.ToString());
                 return "Error: " + ex.ToString();
             }
         }
