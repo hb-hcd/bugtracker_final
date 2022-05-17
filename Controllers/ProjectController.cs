@@ -9,9 +9,9 @@ using SD_125_BugTracker.Models;
 
 namespace SD_125_BugTracker.Controllers
 {
-    
-    [Authorize(Roles = "Admin")]
+
     [Authorize(Roles = "Project Manager")]
+    [Authorize(Roles = "Admin")]
     public class ProjectController : Controller
     {
         private ApplicationDbContext _db;
@@ -74,7 +74,7 @@ namespace SD_125_BugTracker.Controllers
             }
         }
 
-        public IActionResult viewProjects(string userId)
+        public async Task<ActionResult> viewProjects(string userId, string searchString, int? pageNumber)
         {
             //get all projectIds of the current user
             var projectUsers = projectUserBL.GetList(userId);
@@ -85,14 +85,40 @@ namespace SD_125_BugTracker.Controllers
             }
             var userProjects = projectBL.GetUserProjects(projectIds).Where(p => p.IsArchived == false).ToList();
             ViewBag.userId = userId;
-            return View(userProjects);
+
+            int pageSize = 5;//the max value is 10 records in every page
+            //get filter items when search string is not null
+            if ( searchString != null )
+            {
+                var searchedProject = userProjects.Where(p => p.Name.Contains(searchString));
+
+                //converts the project query to a single page of projects in a collection type that supports paging.
+                //The AsNoTracking() extension method returns a new query and the returned entities will not be cached by the context (DbContext or Object Context). 
+                return View(await PaginationList<Project>.CreateAsync(searchedProject, pageNumber ?? 1, pageSize)); //if pageNumber is null, pageNumber=1,else pageNumber = pageNumber
+            }
+
+            ViewBag.userId = userId;
+            return View(await PaginationList<Project>.CreateAsync(userProjects, pageNumber ?? 1, pageSize));
         }
 
-        public IActionResult viewAllProjects(string userId)
+        public async Task<ActionResult> viewAllProjects(string userId, string searchString, int? pageNumber)
         {
-            List<Project> allProjects = projectBL.GetAllProjects().Where(p=>p.IsArchived == false).ToList();
+            var allProjects = projectBL.GetAllProjects().Where(p=>p.IsArchived == false);
+            //Pagination
+            int pageSize = 5;//the max value is 10 records in every page
+            //get filter items when search string is not null
+            if ( searchString != null )
+            {
+                var searchedProject = allProjects.Where(p => p.Name.Contains(searchString));
+
+                //converts the project query to a single page of projects in a collection type that supports paging.
+                //The AsNoTracking() extension method returns a new query and the returned entities will not be cached by the context (DbContext or Object Context). 
+                return View(await PaginationList<Project>.CreateAsync(searchedProject, pageNumber ?? 1, pageSize)); //if pageNumber is null, pageNumber=1,else pageNumber = pageNumber
+            }
+
             ViewBag.userId = userId;
-            return View(allProjects);
+            return View(await PaginationList<Project>.CreateAsync(allProjects, pageNumber ?? 1, pageSize));
+   
         }
 
 
