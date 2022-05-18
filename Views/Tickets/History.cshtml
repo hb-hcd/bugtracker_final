@@ -1,0 +1,48 @@
+﻿@model ICollection<TicketHistory>
+
+@{
+    ViewBag.Title = "Ticket history";
+    Layout = "_Layout";
+}
+
+<h2>Ticket history</h2>
+
+@if (Model.Any()) {
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                Ticket
+            </th>
+            <th>
+                Property
+            </th>
+            <th>
+                Old Value
+            </th>
+            <th>
+                New Value
+            </th>
+            <th>
+                Changed On
+            </th>
+            <th>
+                Changed By
+            </th>
+        </tr>
+        </thead>
+        @foreach (var ticketHistory in @Model) {
+            <tr class="column">
+                <td>@ticketHistory.Ticket?.Title</td>
+                <td>@ticketHistory.Property</td>
+                <td>@ticketHistory.OldValue</td>
+                <td>@ticketHistory.NewValue</td>
+                <td>@ticketHistory.Changed</td>
+                <td>@ticketHistory.User?.UserName</td>
+            </tr>
+        }
+    </table>
+}
+else {
+    <p>There is no history.</p>
+}

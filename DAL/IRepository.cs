@@ -6,9 +6,7 @@
         void Add(T entity);
 
         //read
-        T Get(int id);
-        T Get(Func<T, bool> firstFunction);
-        ICollection<T> GetAll();
+        T? Get(Func<T, bool> firstFunction);
         ICollection<T> GetList(Func<T, bool> whereFunction);
 
         //update

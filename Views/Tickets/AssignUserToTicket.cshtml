@@ -1,0 +1,26 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Assign User to Ticket";
+    Layout = "_Layout";
+}
+
+<h2>Assign User to Ticket</h2>
+
+<form asp-action="AssignUserToTicket">
+    <div>
+        <label class="control-label">Project</label>
+        <select class="form-control" name="ticketId" asp-items="@ViewBag.tickets" ></select>
+    </div>
+    <div>
+        <label class="control-label">Project</label>
+        <select class="form-control" name="userId" asp-items="@ViewBag.users" ></select>
+    </div>
+    <div>
+        <input type="submit" value="Assign User to Ticket" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

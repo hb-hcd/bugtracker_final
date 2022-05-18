@@ -5,6 +5,8 @@ namespace SD_125_BugTracker.Models
     public class TicketAttachment
     {
         public int Id {get; set; }
+        
+        public virtual Ticket? Ticket  { get; set; }
         public int? TicketId {get; set; }
 
         public string? FilePath {get; set; }

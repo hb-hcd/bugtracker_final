@@ -1,9 +1,20 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SD_125_BugTracker.DAL;
 using SD_125_BugTracker.Data;
 using SD_125_BugTracker.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add repository singleton
+builder.Services.AddScoped<IRepository<Project>, ProjectRepository>();
+builder.Services.AddScoped<IRepository<ProjectUser>, ProjectUserRepository>();
+builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
+builder.Services.AddScoped<IRepository<TicketAttachment>, TicketAttachmentRepository>();
+builder.Services.AddScoped<IRepository<TicketComment>, TicketCommentRepository>();
+builder.Services.AddScoped<IRepository<TicketHistory>, TicketHistoryRepository>();
+builder.Services.AddScoped<IRepository<TicketNotification>, TicketNotificationRepository>();
+builder.Services.AddScoped<IUserRepository<ApplicationUser>, UserRepository>();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

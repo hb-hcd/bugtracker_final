@@ -62,7 +62,7 @@ namespace SD_125_BugTracker.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TicketyTypes",
+                name: "TicketTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -71,7 +71,7 @@ namespace SD_125_BugTracker.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TicketyTypes", x => x.Id);
+                    table.PrimaryKey("PK_TicketTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,9 +144,9 @@ namespace SD_125_BugTracker.Data.Migrations
                         principalTable: "TicketStatuses",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tickets_TicketyTypes_TicketTypeId",
+                        name: "FK_Tickets_TicketTypes_TicketTypeId",
                         column: x => x.TicketTypeId,
-                        principalTable: "TicketyTypes",
+                        principalTable: "TicketTypes",
                         principalColumn: "Id");
                 });
 
@@ -372,7 +372,7 @@ namespace SD_125_BugTracker.Data.Migrations
                 name: "TicketStatuses");
 
             migrationBuilder.DropTable(
-                name: "TicketyTypes");
+                name: "TicketTypes");
 
             migrationBuilder.DropColumn(
                 name: "Discriminator",

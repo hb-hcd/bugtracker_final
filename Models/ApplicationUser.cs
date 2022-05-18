@@ -17,7 +17,5 @@ namespace SD_125_BugTracker.Models
         public virtual ICollection<TicketComment> TicketComments { get; set; }
         public virtual ICollection<TicketHistory> TicketHistories { get; set; }
         public virtual ICollection<TicketNotification> TicketNotification { get; set; }
-       
-       
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SD_125_BugTracker.Models
 {
@@ -40,6 +39,22 @@ namespace SD_125_BugTracker.Models
             TicketHistories = new HashSet<TicketHistory>();
             TicketNotifications = new HashSet<TicketNotification>();
 
+        }
+        
+        public Ticket Copy() {
+            return new() {
+                Id = Id,
+                Title = Title,
+                Created = Created,
+                Updated = Updated,
+                Description = Description,
+                ProjectId = ProjectId,
+                TicketTypeId = TicketTypeId,
+                TicketPriorityId = TicketPriorityId,
+                TicketStatusId = TicketStatusId,
+                OwnerUserId = OwnerUserId,  
+                AssignedToUserId = AssignedToUserId
+            };
         }
 
     }
