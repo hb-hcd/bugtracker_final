@@ -1,0 +1,57 @@
+﻿@model System.Collections.Generic.ICollection<SD_125_BugTracker.Models.Ticket>
+
+@{
+    ViewBag.Title = "Projects";
+    Layout = "_Layout";
+}
+
+<h2>Projects</h2>
+
+@if (Model.Any()) {
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th>
+                Project
+            </th>
+            <th>
+                Ticket Priority
+            </th>
+            <th>
+                Ticket Type
+            </th>
+            <th>
+                Ticket Status
+            </th>
+            <th>
+                Owner User
+            </th>
+            <th>
+                Assigned User
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        @foreach (var ticket in @Model) {
+            <tr class="column">
+                <td>@ticket.Title</td>
+                <td>@ticket.Project?.Name</td>
+                <td>@ticket.TicketPriority?.Name</td>
+                <td>@ticket.TicketType?.Name</td>
+                <td>@ticket.TicketStatus?.Status</td>
+                <td>@ticket.OwnerUser?.UserName</td>
+                <td>@ticket.AssignedToUser?.UserName</td>
+                <td>
+                    <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">Details</a>
+                    <a asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">Edit</a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else {
+    <p>There are no tickets.</p>
+}

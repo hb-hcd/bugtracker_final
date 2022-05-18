@@ -2,14 +2,14 @@
 {
     public class TicketPriority
     {
-        public int Id{get; set; }
-        public Priority? Name{get; set; }
+        public int Id { get; set; }
+        public Priority Name { get; set; }
     }
 
     public enum Priority
     {
-        High,
-        Medium,
-        Low
+        Low = 1,
+        Medium = 2,
+        High = 3,
     }
 }

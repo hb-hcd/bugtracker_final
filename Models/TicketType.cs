@@ -3,14 +3,14 @@
     public class TicketType
     {
         public int Id { get; set; }
-        public Type? Name { get; set; }
+        public Type Name { get; set; }
 
 
     }
     public enum Type
     {
-        Incident, 
-        ServiceRequest, 
-        InformationRequest
+        Incident = 1, 
+        ServiceRequest = 2, 
+        InformationRequest = 3 
     }
 }

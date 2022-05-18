@@ -25,7 +25,7 @@ namespace SD_125_BugTracker.DAL
            return _db.Projects.Find(id);
         }
 
-        public Project Get(Func<Project, bool> firstFunction)
+        public Project? Get(Func<Project, bool> firstFunction)
         {
             return _db.Projects.First(firstFunction);
         }

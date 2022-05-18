@@ -21,7 +21,7 @@ namespace SD_125_BugTracker.Data
         public virtual DbSet<TicketAttachment> TicketAttachments { get; set; } = null!;
         public virtual DbSet<TicketPriority> TicketPriorities { get; set; } = null!;
         public virtual DbSet<TicketStatus> TicketStatuses { get; set; } = null!;
-        public virtual DbSet<TicketType> TicketyTypes { get; set; } = null!;
+        public virtual DbSet<TicketType> TicketTypes { get; set; } = null!;
 
         public virtual DbSet<AssignedProject> AssignedProjects {get; set; } = null!;
 

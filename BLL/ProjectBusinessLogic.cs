@@ -6,10 +6,10 @@ namespace SD_125_BugTracker.BLL
 {
     public class ProjectBusinessLogic
     {
-        public ProjectRepository projectRepo;
+        public IRepository<Project> projectRepo;
      
 
-        public ProjectBusinessLogic(ProjectRepository projectRepoArg)
+        public ProjectBusinessLogic(IRepository<Project> projectRepoArg)
         {
             projectRepo = projectRepoArg;
         }
@@ -20,13 +20,14 @@ namespace SD_125_BugTracker.BLL
             projectRepo.Save();
         }
 
-        public Project Get(int id)
+        public Project? Get(int? id)
         {
-           return projectRepo.Get(id);
+            Project? project = projectRepo.Get(p => p.Id == id);
+            return project;
         }
         public List<Project> GetAllProjects()
         {
-           return projectRepo.GetAll().ToList();
+           return projectRepo.GetList(_ => true).ToList();
 
         }
 

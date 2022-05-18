@@ -10,8 +10,7 @@ using SD_125_BugTracker.Models;
 namespace SD_125_BugTracker.Controllers
 {
 
-    [Authorize(Roles = "Project Manager")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Project Manager,Admin")]
     public class ProjectController : Controller
     {
         private ApplicationDbContext _db;
