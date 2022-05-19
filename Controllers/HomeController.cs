@@ -32,7 +32,7 @@ namespace SD_125_BugTracker.Controllers
             }
             else if ( User.IsInRole("Developer") )
             {
-                return RedirectToAction("Index", "Developer");
+                return RedirectToAction("Index", "Developers");
             }
             else if ( User.IsInRole("Submitter") )
             {
