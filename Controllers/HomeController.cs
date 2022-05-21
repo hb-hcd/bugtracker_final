@@ -10,14 +10,16 @@ namespace SD_125_BugTracker.Controllers
     public class HomeController : Controller
     {
         private ApplicationDbContext _db;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public HomeController(ApplicationDbContext context,UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public HomeController(ApplicationDbContext context,UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
         {
             _db = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index()
@@ -32,7 +34,7 @@ namespace SD_125_BugTracker.Controllers
             }
             else if ( User.IsInRole("Developer") )
             {
-                return RedirectToAction("Index", "Developer");
+                return RedirectToAction("Index", "Developers");
             }
             else if ( User.IsInRole("Submitter") )
             {
@@ -59,6 +61,12 @@ namespace SD_125_BugTracker.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Demo() {
+            var user = await _userManager.FindByNameAsync("guest@bug-tracker.com");
+            await _signInManager.SignInAsync(user, true, "");
+            return RedirectToAction("Index", "Home");
+        }
+        
         public IActionResult Privacy()
         {
             return View();

@@ -54,6 +54,14 @@ public static class SeedData {
                 NormalizedUserName = "SUBMITTER@BUG-TRACKER.COM",
                 EmailConfirmed = true
             };
+            
+            ApplicationUser guestUser = new() {
+                UserName = "guest@bug-tracker.com",
+                Email = "guest@bug-tracker.com",
+                NormalizedEmail = "GUEST@BUG-TRACKER.COM",
+                NormalizedUserName = "GUEST@BUG-TRACKER.COM",
+                EmailConfirmed = true
+            };
 
             var passwordHasher = new PasswordHasher<ApplicationUser>();
             var adminPassword = passwordHasher.HashPassword(admin, "Password!@#123");
@@ -67,13 +75,18 @@ public static class SeedData {
             
             var submitterPassword = passwordHasher.HashPassword(submitter, "Password!@#123");
             submitter.PasswordHash = submitterPassword;
+            
+            var guestPassword = passwordHasher.HashPassword(guestUser, "");
+            guestUser.PasswordHash = guestPassword;
 
             await userManager.CreateAsync(admin);
             await userManager.CreateAsync(projectManager);
             await userManager.CreateAsync(developer);
             await userManager.CreateAsync(submitter);
+            await userManager.CreateAsync(guestUser);
 
             await userManager.AddToRoleAsync(admin, "Admin");
+            await userManager.AddToRoleAsync(guestUser, "Admin");
             await userManager.AddToRoleAsync(projectManager, "Project Manager");
             await userManager.AddToRoleAsync(developer, "Developer");
             await userManager.AddToRoleAsync(submitter, "Submitter");

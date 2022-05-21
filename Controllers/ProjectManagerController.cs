@@ -24,7 +24,5 @@ namespace SD_125_BugTracker.Controllers
         {
             return View();
         }
-
-
     }
 }
