@@ -139,7 +139,7 @@ public class TicketBusinessLogic {
         updatedTicket.Updated = DateTime.Now;
 
         _ticketRepository.Update(updatedTicket);
-        
+        Save();
     }
 
     public ICollection<TicketHistory> GetTicketHistory(int? ticketId) {

@@ -23,6 +23,10 @@ namespace SD_125_BugTracker.BLL
             return repo.Get(ap => ap.ProjectId == id);
         }
 
+        public List<AssignedProject> GetList(string userId)
+        {
+            return repo.GetList(ap => ap.UserId == userId).ToList();
+        }
         public void Delete(int id)
         {
             AssignedProject project = repo.Get(ap=>ap.ProjectId == id);

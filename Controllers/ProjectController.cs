@@ -10,7 +10,7 @@ using SD_125_BugTracker.Models;
 namespace SD_125_BugTracker.Controllers
 {
 
-    [Authorize(Roles = "Project Manager,Admin")]
+    [Authorize]
     public class ProjectController : Controller
     {
         private ApplicationDbContext _db;
@@ -40,7 +40,7 @@ namespace SD_125_BugTracker.Controllers
                 return RedirectToAction("Index", "Admin");
             }
         }
-
+        [Authorize(Roles = "Project Manager,Admin")]
         public IActionResult createProject(string userId)
         {
             ViewBag.userId = userId;
@@ -49,6 +49,7 @@ namespace SD_125_BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Project Manager,Admin")]
         public async Task<ActionResult> createProject(string userId, IFormCollection collection)
         {
             try
@@ -75,21 +76,35 @@ namespace SD_125_BugTracker.Controllers
 
         public async Task<ActionResult> viewProjects(string userId, string searchString, int? pageNumber)
         {
-            //get all projectIds of the current user
-            var projectUsers = projectUserBL.GetList(userId);
+
             List<int> projectIds = new List<int>();
-            foreach ( var projectUser in projectUsers )
+            List<Project> projects = null;
+            //get all projectIds from projectuser if user role is admin or project manager
+            if ( User.IsInRole("Admin") || User.IsInRole("Project Manager") )
             {
-                projectIds.Add((int)projectUser.ProjectId);
+                var projectUsers = projectUserBL.GetList(userId);
+                foreach ( var projectUser in projectUsers )
+                {
+                    projectIds.Add((int)projectUser.ProjectId);
+                }
             }
-            var userProjects = projectBL.GetUserProjects(projectIds).Where(p => p.IsArchived == false).ToList();
+            else
+            {
+                //get user's assignedprojects if user role is developer or submitter
+                var assignedProjects = assignedProjectBL.GetList(userId).ToList();
+                foreach ( var assignedProject in assignedProjects )
+                {
+                    projectIds.Add(assignedProject.ProjectId);
+                }
+            }
+            projects = projectBL.GetUserProjects(projectIds).Where(p => p.IsArchived == false).ToList();
             ViewBag.userId = userId;
 
             int pageSize = 5;//the max value is 10 records in every page
             //get filter items when search string is not null
             if ( searchString != null )
             {
-                var searchedProject = userProjects.Where(p => p.Name.Contains(searchString));
+                var searchedProject = projects.Where(p => p.Name.Contains(searchString));
 
                 //converts the project query to a single page of projects in a collection type that supports paging.
                 //The AsNoTracking() extension method returns a new query and the returned entities will not be cached by the context (DbContext or Object Context). 
@@ -97,9 +112,10 @@ namespace SD_125_BugTracker.Controllers
             }
 
             ViewBag.userId = userId;
-            return View(await PaginationList<Project>.CreateAsync(userProjects, pageNumber ?? 1, pageSize));
+            return View(await PaginationList<Project>.CreateAsync(projects, pageNumber ?? 1, pageSize));
         }
 
+        [Authorize(Roles = "Project Manager,Admin")]
         public async Task<ActionResult> viewAllProjects(string userId, string searchString, int? pageNumber)
         {
             var allProjects = projectBL.GetAllProjects().Where(p=>p.IsArchived == false);
@@ -120,7 +136,7 @@ namespace SD_125_BugTracker.Controllers
    
         }
 
-
+        [Authorize(Roles = "Project Manager,Admin")]
         public async Task<ActionResult> Assign(int ProjectId)
         {
             Project project = projectBL.Get(ProjectId);
@@ -144,6 +160,7 @@ namespace SD_125_BugTracker.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+        [Authorize(Roles = "Project Manager,Admin")]
         public IActionResult Assign(int projectId, string userId)
         {
             AssignedProject assignedProject = new AssignedProject();
@@ -154,6 +171,7 @@ namespace SD_125_BugTracker.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Project Manager,Admin")]
         public async Task<ActionResult> Unassign(int ProjectId)
         {
            AssignedProject assignedProject  = assignedProjectBL.Get(ProjectId);
@@ -171,6 +189,7 @@ namespace SD_125_BugTracker.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+        [Authorize(Roles = "Project Manager,Admin")]
         public IActionResult Unassign(int ProjectId, string userName)
         {
             assignedProjectBL.Delete(ProjectId);
@@ -179,6 +198,7 @@ namespace SD_125_BugTracker.Controllers
 
         }
 
+        [Authorize(Roles = "Project Manager,Admin")]
         public IActionResult Edit(int ProjectId)
         {
             Project projectToEdit = projectBL.Get(ProjectId);
@@ -187,6 +207,7 @@ namespace SD_125_BugTracker.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+        [Authorize(Roles = "Project Manager,Admin")]
         public IActionResult Edit(int Id, string Name)
         {
             Project projectToEdit = projectBL.Get(Id);
@@ -197,12 +218,20 @@ namespace SD_125_BugTracker.Controllers
          
         }
 
+        [Authorize(Roles = "Project Manager,Admin")]
         public IActionResult Archive(int ProjectId)
         {
             Project projectToArchive = projectBL.Get(ProjectId);
             projectToArchive.IsArchived = true;
             projectBL.Edit(projectToArchive);
             return RedirectToAction("Index");
+        }
+
+        public IActionResult Details(int ProjectId)
+        {
+         Project currProject = projectBL.Get(ProjectId);
+          return View(currProject);
+
         }
     }
 }
