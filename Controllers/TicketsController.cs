@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SD_125_BugTracker.BLL;
 using SD_125_BugTracker.DAL;
+using SD_125_BugTracker.Data;
 using SD_125_BugTracker.Models;
 using Type = SD_125_BugTracker.Models.Type;
 
@@ -13,17 +14,20 @@ public class TicketsController : Controller {
     private readonly TicketBusinessLogic _ticketBll;
     private readonly ProjectBusinessLogic _projectBll;
     private readonly UserBusinessLogic _userBll;
+    private readonly AssignedProjectBusinessLogic _assignedBll;
 
     public TicketsController(
         IUserRepository<ApplicationUser> userRepository,
         IRepository<Project> projectRepository,
         IRepository<ProjectUser> projectUserRepository,
         IRepository<Ticket> ticketRepository,
-        IRepository<TicketHistory> ticketHistoryRepository
+        IRepository<TicketHistory> ticketHistoryRepository,
+        ApplicationDbContext context
     ) {
         _ticketBll = new TicketBusinessLogic(ticketRepository, ticketHistoryRepository, projectUserRepository);
         _userBll = new UserBusinessLogic(userRepository);
         _projectBll = new ProjectBusinessLogic(projectRepository);
+        _assignedBll = new AssignedProjectBusinessLogic(new AssignedProjectRepository(context));
     }
 
     [HttpGet]
@@ -68,8 +72,17 @@ public class TicketsController : Controller {
 
     [HttpGet]
     [Authorize(Roles = "Submitter")]
-    public IActionResult Create() {
-        ViewBag.projects = new SelectList(_projectBll.GetAllProjects().ToList(), "Id", "Name");
+    public IActionResult Create(string userId) {
+        //only getting projects assigned to the submitter
+        var assignedProjects = _assignedBll.GetList(userId).ToList();
+        List<int> projectIds = new List<int>();
+        foreach ( var assignedProject in assignedProjects )
+        {
+            projectIds.Add(assignedProject.ProjectId);
+        }
+        var projectsBelongToUser = _projectBll.GetUserProjects(projectIds).Where(p => p.IsArchived == false).ToList();
+
+        ViewBag.projects = new SelectList(projectsBelongToUser, "Id", "Name");
         var types = from Type t in Enum.GetValues(typeof(Type)) 
             select new {Id = (int)t, Name = t.ToString()};
         

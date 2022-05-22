@@ -15,6 +15,7 @@ builder.Services.AddScoped<IRepository<TicketComment>, TicketCommentRepository>(
 builder.Services.AddScoped<IRepository<TicketHistory>, TicketHistoryRepository>();
 builder.Services.AddScoped<IRepository<TicketNotification>, TicketNotificationRepository>();
 builder.Services.AddScoped<IUserRepository<ApplicationUser>, UserRepository>();
+builder.Services.AddScoped<IRepository<AssignedProject>, AssignedProjectRepository>();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

@@ -10,18 +10,20 @@ public class SubmitterController : Controller {
     private readonly UserBusinessLogic _userBll;
 
     // GET
-    public SubmitterController(IUserRepository<ApplicationUser> userRepository, 
+    public SubmitterController(IUserRepository<ApplicationUser> userRepository,
         IRepository<ProjectUser> projectUserRepository,
         IRepository<Ticket> ticketRepository,
         IRepository<TicketHistory> ticketHistoryRepository
         ) {
         _ticketBll = new TicketBusinessLogic(ticketRepository, ticketHistoryRepository, projectUserRepository);
         _userBll = new UserBusinessLogic(userRepository);
+       
     }
 
     public async Task<IActionResult> Index() {
-        var user = await _userBll.GetUserByName(User.Identity?.Name);
-        List<Ticket> tickets = _ticketBll.GetOwnedTickets(user?.Id).ToList();
-        return View(tickets);
+        var currUsername = User.Identity.Name;
+        ApplicationUser currSubmitter = await _userBll.GetUserByName(currUsername);
+        ViewBag.userId = currSubmitter.Id;
+        return View();
     }
 }
