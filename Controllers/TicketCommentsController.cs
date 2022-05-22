@@ -20,6 +20,28 @@ public class TicketCommentsController : Controller {
         _userBll = new UserBusinessLogic(userRepository);
     }
 
+
+    [HttpGet]
+    public async Task<IActionResult> Index(int? ticketid)
+    {
+        if ( ticketid is null )
+        {
+            return NotFound("Ticket not found");
+        }
+        try
+        {
+            ViewBag.ticketId = ticketid;
+            List<TicketComment> comments = _ticketCommentBll.GetTicketCommentsByTicketId(ticketid).ToList();
+            return View(comments);
+        }
+        catch ( Exception e )
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+
     [HttpGet]
     public IActionResult Create(int? ticketId) {
         if (ticketId is null) {
@@ -40,15 +62,58 @@ public class TicketCommentsController : Controller {
     public async Task<IActionResult> Create([Bind("Comment,TicketId")] TicketComment ticketComment) {
         var user =  await _userBll.GetUserByName(User.Identity?.Name);
         ticketComment.UserId = user?.Id;
-
+  
         try {
             _ticketCommentBll.CreateComment(ticketComment);
             _ticketCommentBll.Save();
-            return Redirect("Index");
+            return RedirectToAction("Index", new { ticketid = ticketComment.TicketId});
         }
         catch (Exception e) {
             Console.WriteLine(e);
             throw;
         }
     }
+
+
+
+    public ActionResult Delete(int commentId, int ticketId)
+    {
+       var comment = _ticketCommentBll.GetCommentById(commentId);
+        _ticketCommentBll.DeleteComment(comment);
+        _ticketCommentBll.Save();
+        return RedirectToAction("Index", new
+        {
+            ticketid = ticketId
+        });
+    }
+    [HttpGet]
+    public ActionResult Edit(int commentId)
+    {
+        var comment = _ticketCommentBll.GetCommentById(commentId);
+         return View(comment);
+    }
+
+    [HttpPost]
+    public ActionResult Edit(int Id, string? Comment)
+    {
+        var comment = _ticketCommentBll.GetCommentById(Id);
+        if ( Comment != null )
+        {
+            comment.Comment = Comment;
+        }
+        _ticketCommentBll.UpdateComment(comment);
+        _ticketCommentBll.Save();
+        return RedirectToAction("Index", new
+        {
+            ticketid = comment.TicketId
+        });
+    }
+
+    [HttpGet]
+    public ActionResult Details(int commentId)
+    {
+        var comment = _ticketCommentBll.GetCommentById(commentId);
+        return View(comment);
+    }
 }
+    

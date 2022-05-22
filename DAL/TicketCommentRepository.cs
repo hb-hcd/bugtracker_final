@@ -40,13 +40,13 @@ public class TicketCommentRepository : IRepository<TicketComment> {
         }
 
         _context.TicketComments.Add(entity);
+
     }
 
     public void Update(TicketComment? entity) {
         if (entity is null) {
             throw new ArgumentNullException();
         }
-
         _context.TicketComments.Update(entity);
     }
 
