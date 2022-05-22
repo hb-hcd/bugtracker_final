@@ -35,4 +35,14 @@ public class TicketCommentBll {
     public void Save() {
         _ticketCommentRepository.Save();
     }
+
+    public List<TicketComment> GetTicketCommentsByTicketId(int? id)
+    {
+        return _ticketCommentRepository.GetList(c => c.TicketId == id).ToList();
+    }
+
+    public TicketComment GetCommentById(int id)
+    {
+       return _ticketCommentRepository.Get(c=>c.Id == id);
+    }
 }

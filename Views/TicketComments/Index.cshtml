@@ -1,0 +1,44 @@
+﻿@model IEnumerable<SD_125_BugTracker.Models.TicketComment>
+
+<p>
+    <a asp-action="Create" asp-controller="TicketComments" asp-route-ticketId="@ViewBag.ticketId">Add New Comment</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Comment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ( var item in Model )
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Created)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-commentId="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-commentId="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-commentId="@item.Id" asp-route-ticketId="@ViewBag.ticketId" onclick="return confirm('Are you sure to delete current comment?')">Delete</a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+        <a asp-action="Index" asp-controller="Tickets">Back to ticket list</a>

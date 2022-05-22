@@ -15,7 +15,6 @@ public class TicketsController : Controller {
     private readonly ProjectBusinessLogic _projectBll;
     private readonly UserBusinessLogic _userBll;
     private readonly AssignedProjectBusinessLogic _assignedBll;
-
     public TicketsController(
         IUserRepository<ApplicationUser> userRepository,
         IRepository<Project> projectRepository,
@@ -26,7 +25,7 @@ public class TicketsController : Controller {
     ) {
         _ticketBll = new TicketBusinessLogic(ticketRepository, ticketHistoryRepository, projectUserRepository);
         _userBll = new UserBusinessLogic(userRepository);
-        _projectBll = new ProjectBusinessLogic(projectRepository);
+        _projectBll = new ProjectBusinessLogic(projectRepository);     
         _assignedBll = new AssignedProjectBusinessLogic(new AssignedProjectRepository(context));
     }
 
@@ -263,4 +262,7 @@ public class TicketsController : Controller {
             throw;
         }
     }
+
+
+  
 }
