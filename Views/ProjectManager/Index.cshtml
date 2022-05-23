@@ -7,6 +7,6 @@
 <hr />
 
 
-<a asp-action="Index" asp-controller="Project" >Manage Projects</a> |
-<a asp-action="ManageTickets" asp-controller="Ticket" >Manage Tickets</a> 
+<a asp-action="Index" asp-controller="Project" asp-route-userId = "@ViewBag.userId" >Manage Projects</a> |
+<a asp-action="Index" asp-controller="Tickets" asp-route-userId = "@ViewBag.userId" >Manage Tickets</a> 
 
