@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SD_125_BugTracker.BLL;
@@ -7,14 +8,16 @@ using SD_125_BugTracker.Data;
 using SD_125_BugTracker.Models;
 using Type = SD_125_BugTracker.Models.Type;
 
-namespace SD_125_BugTracker.Controllers; 
+namespace SD_125_BugTracker.Controllers;
 
 [Authorize]
-public class TicketsController : Controller {
+public class TicketsController : Controller
+{
     private readonly TicketBusinessLogic _ticketBll;
     private readonly ProjectBusinessLogic _projectBll;
     private readonly UserBusinessLogic _userBll;
     private readonly AssignedProjectBusinessLogic _assignedBll;
+    private readonly ApplicationDbContext _db;
     public TicketsController(
         IUserRepository<ApplicationUser> userRepository,
         IRepository<Project> projectRepository,
@@ -22,24 +25,34 @@ public class TicketsController : Controller {
         IRepository<Ticket> ticketRepository,
         IRepository<TicketHistory> ticketHistoryRepository,
         ApplicationDbContext context
-    ) {
+    )
+    {
         _ticketBll = new TicketBusinessLogic(ticketRepository, ticketHistoryRepository, projectUserRepository);
         _userBll = new UserBusinessLogic(userRepository);
-        _projectBll = new ProjectBusinessLogic(projectRepository);     
+        _projectBll = new ProjectBusinessLogic(projectRepository);
         _assignedBll = new AssignedProjectBusinessLogic(new AssignedProjectRepository(context));
+        _db = context;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index() {
+    public async Task<IActionResult> Index()
+    {
         List<Ticket> tickets = new();
         var user = await _userBll.GetUserByName(User.Identity?.Name);
-        if (User.IsInRole("Admin")) {
-            tickets =  _ticketBll.GetAllTickets().ToList();
-        } else if (User.IsInRole("Project Manager")) {
+        if ( User.IsInRole("Admin") )
+        {
+            tickets = _ticketBll.GetAllTickets().ToList();
+        }
+        else if ( User.IsInRole("Project Manager") )
+        {
             tickets = _ticketBll.GetProjectManagerTickets(user?.Id);
-        } else if (User.IsInRole("Developer")) {
+        }
+        else if ( User.IsInRole("Developer") )
+        {
             tickets = _ticketBll.GetAssignedTickets(user?.Id).ToList();
-        } else if (User.IsInRole("Submitter")) {
+        }
+        else if ( User.IsInRole("Submitter") )
+        {
             tickets = _ticketBll.GetOwnedTickets(user?.Id).ToList();
         }
 
@@ -47,31 +60,36 @@ public class TicketsController : Controller {
     }
 
     [HttpGet]
-    public IActionResult ProjectTickets(int? projectId) {
-        if (projectId is null) {
+    public IActionResult ProjectTickets(int? projectId)
+    {
+        if ( projectId is null )
+        {
             return BadRequest();
         }
-        
+
         Project? project = _projectBll.Get(projectId);
 
-        
+
         return View(project?.Tickets);
     }
 
     [HttpGet]
-    public IActionResult History(int? ticketId) {
-        if (ticketId is null) {
+    public IActionResult History(int? ticketId)
+    {
+        if ( ticketId is null )
+        {
             return BadRequest();
         }
-        
+
         var ticketHistory = _ticketBll.GetTicketHistory(ticketId);
-        
+
         return View(ticketHistory);
     }
 
     [HttpGet]
     [Authorize(Roles = "Submitter")]
-    public IActionResult Create(string userId) {
+    public IActionResult Create(string userId)
+    {
         //only getting projects assigned to the submitter
         var assignedProjects = _assignedBll.GetList(userId).ToList();
         List<int> projectIds = new List<int>();
@@ -82,33 +100,47 @@ public class TicketsController : Controller {
         var projectsBelongToUser = _projectBll.GetUserProjects(projectIds).Where(p => p.IsArchived == false).ToList();
 
         ViewBag.projects = new SelectList(projectsBelongToUser, "Id", "Name");
-        var types = from Type t in Enum.GetValues(typeof(Type)) 
-            select new {Id = (int)t, Name = t.ToString()};
-        
-        var priorities = from Priority t in Enum.GetValues(typeof(Priority)) 
-            select new {Id = (int)t, Name = t.ToString()};
-        
-        
+        var types = from Type t in Enum.GetValues(typeof(Type))
+                    select new
+                    {
+                        Id = (int)t,
+                        Name = t.ToString()
+                    };
+
+        var priorities = from Priority t in Enum.GetValues(typeof(Priority))
+                         select new
+                         {
+                             Id = (int)t,
+                             Name = t.ToString()
+                         };
+
+
         ViewBag.ticketTypes = new SelectList(types.ToList(), "Id", "Name");
         ViewBag.ticketPriorities = new SelectList(priorities.ToList(), "Id", "Name");
 
         return View();
     }
-    
+
     [HttpPost]
     [Authorize(Roles = "Submitter")]
-    public async Task<IActionResult> Create([Bind("Title,Description,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId")] Ticket ticket) {
+    public async Task<IActionResult> Create([Bind("Title,Description,ProjectId,TicketTypeId,TicketPriorityId,TicketStatusId")] Ticket ticket)
+    {
         var user = await _userBll.GetUserByName(User.Identity?.Name);
         ticket.OwnerUserId = user?.Id;
         ticket.Created = DateTime.Now;
         ticket.TicketStatusId = (int?)Status.Open;
 
-        try {
+        try
+        {
             _ticketBll.CreateTicket(ticket);
             _ticketBll.Save();
-            return RedirectToAction(nameof(Details), new {id = ticket.Id});
+            return RedirectToAction(nameof(Details), new
+            {
+                id = ticket.Id
+            });
         }
-        catch (Exception e) {
+        catch ( Exception e )
+        {
             Console.WriteLine(e);
             throw;
         }
@@ -116,40 +148,66 @@ public class TicketsController : Controller {
 
     [HttpGet]
     [Authorize(Roles = "Admin,Project Manager")]
-    public async Task<IActionResult> AssignUserToTicket() {
+    public async Task<IActionResult> AssignUserToTicket(int? id)
+    {
         var users = await _userBll.GetUsers();
-        ViewBag.users = new SelectList(users.ToList(), "Id", "UserName");
-        
+        if ( User.IsInRole("Admin") )
+        {
+            ViewBag.users = new SelectList(users.ToList(), "Id", "UserName");
+        }
+        else
+        {
+            //project manager can only assign ticket to developers
+            var developers =
+               from role in _db.Roles
+               join userRole in _db.UserRoles
+               on role.Id equals userRole.RoleId
+               join user in _db.Users
+               on userRole.UserId equals user.Id
+               where role.Name.Contains("Developer")
+               select user;
+      
+            ViewBag.users = new SelectList(developers.ToList(), "Id", "UserName");
+        }
+
+        ViewBag.ticketTitle = _ticketBll.GetTicket(id).Title;
+        ViewBag.ticketId = _ticketBll.GetTicket(id).Id;
         ViewBag.tickets = new SelectList(_ticketBll.GetAllTickets(), "Id", "Title");
-        
+
+
         return View();
     }
-    
+
     [HttpPost]
     [Authorize(Roles = "Admin,Project Manager")]
-    public async Task<IActionResult> AssignUserToTicket(int? ticketId, string? userId) {
+    public async Task<IActionResult> AssignUserToTicket(int? ticketId, string? userId)
+    {
 
         var ticket = _ticketBll.GetTicket(ticketId);
         var user = await _userBll.GetUserById(userId);
 
         var newTicket = ticket.Copy();
-        
+
         newTicket.AssignedToUserId = user?.Id;
 
-        try {
-            _ticketBll.UpdateTicket(ticket, newTicket, (await _userBll.GetUserByName(User.Identity?.Name))?.Id);
+        try
+        {
+            _ticketBll.UpdateTicket(ticket, newTicket, ( await _userBll.GetUserByName(User.Identity?.Name) )?.Id);
             _ticketBll.Save();
             return RedirectToAction(nameof(Index));
         }
-        catch (Exception e) {
+        catch ( Exception e )
+        {
             Console.WriteLine(e);
             throw;
         }
     }
 
     [HttpGet]
-    public IActionResult Details(int? id) {
-        if (id is null) {
+    public IActionResult Details(int? id)
+    {
+        if ( id is null )
+        {
             BadRequest();
         }
 
@@ -159,27 +217,39 @@ public class TicketsController : Controller {
     }
 
     [HttpGet]
-    public IActionResult Edit(int? id) {
-        if (id is null) {
+    public IActionResult Edit(int? id)
+    {
+        if ( id is null )
+        {
             return BadRequest();
         }
 
         Ticket ticket;
-        
-        try {
+
+        try
+        {
             ticket = _ticketBll.GetTicket(id);
         }
-        catch (Exception e) {
+        catch ( Exception e )
+        {
             Console.WriteLine(e);
             throw;
         }
 
-        var types = from Type t in Enum.GetValues(typeof(Type)) 
-            select new {Id = (int)t, Name = t.ToString()};
-        
-        var priorities = from Priority t in Enum.GetValues(typeof(Priority)) 
-            select new {Id = (int)t, Name = t.ToString()};
-        
+        var types = from Type t in Enum.GetValues(typeof(Type))
+                    select new
+                    {
+                        Id = (int)t,
+                        Name = t.ToString()
+                    };
+
+        var priorities = from Priority t in Enum.GetValues(typeof(Priority))
+                         select new
+                         {
+                             Id = (int)t,
+                             Name = t.ToString()
+                         };
+
         ViewBag.ticketTypes = new SelectList(types.ToList(), "Id", "Name");
         ViewBag.ticketPriority = new SelectList(priorities.ToList(), "Id", "Name");
 
@@ -187,51 +257,67 @@ public class TicketsController : Controller {
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(int? id, string? title, string? description, int? ticketTypeId, int? ticketPriorityId) {
-        if (id is null) {
+    public async Task<IActionResult> Edit(int? id, string? title, string? description, int? ticketTypeId, int? ticketPriorityId)
+    {
+        if ( id is null )
+        {
             return BadRequest();
         }
-        
-        try {
+
+        try
+        {
             var ticket = _ticketBll.GetTicket(id);
 
             var updatedTicket = ticket.Copy();
-            
+
             updatedTicket.Title = title;
             updatedTicket.Description = description;
             updatedTicket.TicketTypeId = ticketTypeId;
             updatedTicket.TicketPriorityId = ticketPriorityId;
 
             var user = await _userBll.GetUserByName(User.Identity?.Name);
-            
-          _ticketBll.UpdateTicket(ticket, updatedTicket, user?.Id);
-          _ticketBll.Save();
 
-          return RedirectToAction(nameof(Details), new {id = ticket.Id});
-        } catch (Exception e) {
+            _ticketBll.UpdateTicket(ticket, updatedTicket, user?.Id);
+            _ticketBll.Save();
+
+            return RedirectToAction(nameof(Details), new
+            {
+                id = ticket.Id
+            });
+        }
+        catch ( Exception e )
+        {
             Console.WriteLine(e);
             throw;
         }
     }
-    
+
     [HttpGet]
-    public IActionResult ChangeStatus(int? id) {
-        if (id is null) {
+    public IActionResult ChangeStatus(int? id)
+    {
+        if ( id is null )
+        {
             return BadRequest();
         }
 
         Ticket ticket;
-        
-        try {
+
+        try
+        {
             ticket = _ticketBll.GetTicket(id);
         }
-        catch (Exception e) {
+        catch ( Exception e )
+        {
             Console.WriteLine(e);
             throw;
         }
 
-        var statuses = from Status t in Enum.GetValues(typeof(Status)) 
-            select new {Id = (int)t, Name = t.ToString()};
+        var statuses = from Status t in Enum.GetValues(typeof(Status))
+                       select new
+                       {
+                           Id = (int)t,
+                           Name = t.ToString()
+                       };
 
         ViewBag.ticketStatuses = new SelectList(statuses.ToList(), "Id", "Name");
 
@@ -239,30 +325,38 @@ public class TicketsController : Controller {
     }
 
     [HttpPost]
-    public async Task<IActionResult> ChangeStatus(int? id, int? ticketStatusId) {
-        if (id is null) {
+    public async Task<IActionResult> ChangeStatus(int? id, int? ticketStatusId)
+    {
+        if ( id is null )
+        {
             return BadRequest();
         }
-        
-        try {
+
+        try
+        {
             var ticket = _ticketBll.GetTicket(id);
 
             var updatedTicket = ticket.Copy();
-            
+
             updatedTicket.TicketStatusId = ticketStatusId;
 
             var user = await _userBll.GetUserByName(User.Identity?.Name);
-            
+
             _ticketBll.UpdateTicket(ticket, updatedTicket, user?.Id);
             _ticketBll.Save();
 
-            return RedirectToAction(nameof(Details), new {id = ticket.Id});
-        } catch (Exception e) {
+            return RedirectToAction(nameof(Details), new
+            {
+                id = ticket.Id
+            });
+        }
+        catch ( Exception e )
+        {
             Console.WriteLine(e);
             throw;
         }
     }
 
 
-  
+
 }

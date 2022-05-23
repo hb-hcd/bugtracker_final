@@ -20,8 +20,11 @@ namespace SD_125_BugTracker.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
-        public IActionResult Index()
+        public ActionResult Index()
         {
+        //   ApplicationUser currUser =await  _userManager.FindByNameAsync(User.Identity.Name);
+        //    if (currUser == null) return NotFound();
+        //    ViewBag.userId = currUser.Id;
             return View();
         }
     }

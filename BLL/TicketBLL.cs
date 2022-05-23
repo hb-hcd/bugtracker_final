@@ -157,9 +157,10 @@ public class TicketBusinessLogic {
             throw new NoNullAllowedException();
         }
 
-        var projects = _projectUserRepository.GetList(pu => pu.UserId == userId).Select(p=>p.Project);
+        var projects = _projectUserRepository.GetList(pu => pu.UserId == userId).Select(p=>p.ProjectId);
+        return _ticketRepository.GetList(t => projects.Contains(t.ProjectId)).ToList();
 
-        return projects.SelectMany(project => project.Tickets).ToList();
+        //return projects.SelectMany(project => project.Tickets).ToList();
     }
 
     public void Save() {

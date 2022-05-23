@@ -7,13 +7,14 @@
 
 <h2>Assign User to Ticket</h2>
 
-<form asp-action="AssignUserToTicket">
+<form asp-action="AssignUserToTicket" method="post">
     <div>
-        <label class="control-label">Project</label>
-        <select class="form-control" name="ticketId" asp-items="@ViewBag.tickets" ></select>
+        <label class="control-label">Ticket Title </label>
+       <label class="form-control">@ViewBag.ticketTitle</label>
+        <input hidden name="ticketId" value="@ViewBag.ticketId"/>     
     </div>
     <div>
-        <label class="control-label">Project</label>
+        <label class="control-label">User</label>
         <select class="form-control" name="userId" asp-items="@ViewBag.users" ></select>
     </div>
     <div>
