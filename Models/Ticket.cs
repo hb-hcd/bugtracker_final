@@ -2,10 +2,12 @@
 
 namespace SD_125_BugTracker.Models
 {
-    public class Ticket
+    public class Ticket 
     {
         public int Id {get; set; }
 
+        public CheckResolvedDdl CheckResolvedDdl { get; set; }
+        public CheckResponseDDL CheckResponseDDL { get; set; }  
         public string? Title { get; set; }
         public string? Description { get; set; }
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
@@ -57,5 +59,13 @@ namespace SD_125_BugTracker.Models
             };
         }
 
+        public DateTime ResponseDate()
+        {
+            return Created.Value.AddHours(24);
+        }
+        public DateTime CalculateDate(DateTime dateTime,int hours)
+        {
+           return dateTime.AddHours(hours);
+        }
     }
 }

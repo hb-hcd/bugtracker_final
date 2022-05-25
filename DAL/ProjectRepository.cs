@@ -6,6 +6,10 @@ namespace SD_125_BugTracker.DAL
     public class ProjectRepository : IRepository<Project>
     {
         public ApplicationDbContext _db { get; set; }
+        public ProjectRepository()
+        {
+
+        }
         public ProjectRepository(ApplicationDbContext context)
         {
             _db = context;
@@ -20,22 +24,22 @@ namespace SD_125_BugTracker.DAL
             _db.Projects.Remove(entity);
         }
 
-        public Project Get(int id)
+        public virtual Project Get(int id)
         {
            return _db.Projects.Find(id);
         }
 
-        public Project? Get(Func<Project, bool> firstFunction)
+        public virtual Project? Get(Func<Project, bool> firstFunction)
         {
             return _db.Projects.First(firstFunction);
         }
 
-        public ICollection<Project> GetAll()
+        public virtual ICollection<Project> GetAll()
         {
             return _db.Projects.ToList();
         }
 
-        public ICollection<Project> GetList(Func<Project, bool> whereFunction)
+        public virtual ICollection<Project> GetList(Func<Project, bool> whereFunction)
         {
             
             return _db.Projects.Where(whereFunction).ToList();

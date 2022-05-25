@@ -20,7 +20,7 @@ namespace SD_125_BugTracker.BLL
             projectRepo.Save();
         }
 
-        public Project? Get(int? id)
+        public virtual Project? Get(int? id)
         {
             Project? project = projectRepo.Get(p => p.Id == id);
             return project;
